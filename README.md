@@ -6,7 +6,7 @@ Or simpled as you want to test 2 categorical independent variables
 e.g. variable A & variable B effect both and individually to dependent variable.
 
 This was used in one of my research to determine how significant treatments to dependent variable -> mine was height, diameter, etc.
-For the S
+For the Script check for the **script** file. Below [here](README.md/#Breakdown) will explain for each code
 
 # </b> Breakdown </p>
 R uses packages to run a task, and to load a package type `library()` in the terminal
