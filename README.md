@@ -26,3 +26,16 @@ library(dplyr)
 ~~~
 library(agricolae)
 ~~~
+
+We're going to set our .xlsx file as the environment with
+~~~
+(environment name) <- (your excel file)
+~~~
+Feel free to use any name you like. But keep in mind that **R is highly sensitive** to typo, uppercase/lowercase, so choose wisely.
+
+After this, we will set our independent variable as the factor R recognize by
+~~~
+(environment name)$(your 1st factor) <- as.factor(environment name$your 1st factor)
+(environment name)$(your 2nd factor) <- as.factor(environment name$your 2nd factor)
+~~~
+
