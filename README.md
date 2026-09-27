@@ -39,3 +39,15 @@ After this, we will set our independent variable as the factor R recognize by
 (environment name)$(your 2nd factor) <- as.factor(environment name$your 2nd factor)
 ~~~
 
+### 2nd - ANOVA test and Post-hoc Tukey HSD test
+The data now good to go and we will do statistical test.
+Package used `aov()` and for the detail is below
+~~~
+(model_anova) <- aov(dependent variable ~ 1st factor * 2nd factor, data = (environment name))
+summary(model_anova)
+~~~
+From here, you have done the ANOVA test, usually if the result is significance, we continue to do post-hoc test to understand the significance between sample (ANOVA for variable testing, Posthoc for sample testing)
+~~~
+Tukey_Test <- HSD.test(model_anova, trt = "1st factor", console = FALSE
+~~~
+Package used is `HSD.test()` and we will test by most preferred factor, mine was 1st but you can change with yours in `trt` (abbreviation of treatment)
