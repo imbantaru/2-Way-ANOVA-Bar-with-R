@@ -1,0 +1,88 @@
+library(readxl)
+library(dplyr)
+library(agricolae)
+
+data_penelitian <- Anova_Panjang_Akhir
+
+head(data_penelitian)
+
+data_penelitian$Konsentrasi <- as.factor(data_penelitian$Konsentrasi)
+data_penelitian$Kondisi <- as.factor(data_penelitian$Kondisi)
+
+model_anova <- aov(Panjang ~ Konsentrasi * Kondisi, data = data_penelitian)
+
+summary(model_anova)
+
+uji_tukey <- HSD.test(model_anova, trt = "Konsentrasi", console = FALSE)
+
+data_huruf <- uji_tukey$groups
+data_huruf$Konsentrasi <- rownames(data_huruf) 
+
+tabel_ringkasan <- data_penelitian %>%
+    group_by(Konsentrasi, Kondisi) %>%
+    summarise(
+        Rata_rata = round(mean(Panjang, na.rm = TRUE), 2),
+        SD = round(sd(Panjang, na.rm = TRUE), 2),
+        .groups = 'drop'
+    )
+
+# 4. MENGGABUNGKAN KEDUA TABEL berdasarkan kata yang sama persis: "Konsentrasi"
+# Karena B1 punya huruf tersendiri, R akan menempelkan huruf B1 tersebut ke B1:Normal dan B1:Virus
+tabel_final <- merge(tabel_ringkasan, data_huruf[, c("Konsentrasi", "groups")], by = "Konsentrasi")
+
+# 5. Memformat tabel akhir agar rapi
+tabel_final <- tabel_final %>%
+    mutate(
+        `Panjang Tanaman (cm)` = paste0(Rata_rata, " +/- ", SD, " ", groups)
+    ) %>%
+    select(Konsentrasi, Kondisi, `Panjang Tanaman (cm)`) %>%
+    arrange(Konsentrasi, Kondisi)
+
+# 6. Menampilkan Hasil Akhir
+print("=== Tabel Rata-rata Panjang Tanaman Lengkap ===")
+print(tabel_final)
+
+write_xlsx(tabel_final, "Tabel Signifikansi Panjang Akhir.xlsx")
+
+# Memuat library untuk grafik
+library(ggplot2)
+
+# 1. Menyiapkan Data untuk Grafik (Menggabungkan rata-rata, SD, dan huruf)
+# Kita menggunakan tabel_ringkasan yang ada di script sebelumnya
+data_grafik <- merge(tabel_ringkasan, data_huruf[, c("Konsentrasi", "groups")], by = "Konsentrasi")
+
+# 2. Membuat Grafik Batang (Bar Chart)
+# 2. Membuat Grafik Batang (Bar Chart)
+grafik_panjang <- ggplot(data_grafik, aes(x = Konsentrasi, y = Rata_rata, fill = Kondisi)) +
+    
+    geom_bar(stat = "identity", position = position_dodge(width = 0.8), 
+             width = 0.7, color = "black") +
+    
+    geom_errorbar(aes(ymin = Rata_rata - SD, ymax = Rata_rata + SD),
+                  position = position_dodge(width = 0.8), width = 0.2) +
+    
+    geom_text(aes(y = Rata_rata + SD + 1.5, label = groups), 
+              position = position_dodge(width = 0.8), size = 4, vjust = 0) +
+    
+    labs(
+        title = "Pengaruh Konsentrasi dan Kondisi terhadap Panjang Akhir Tanaman",
+        x = "Konsentrasi Perlakuan",
+        y = "Rata-rata Panjang Akhir Tanaman (cm)",
+        fill = "Kondisi Tanaman" # Judul legenda
+    ) +
+    
+    theme_classic() +
+    theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(color = "black", size = 11),
+        legend.position = "top" 
+    ) +
+    
+    # BAGIAN YANG DIUBAH: Mengubah nama di dalam legenda
+    scale_fill_brewer(palette = "Set2", 
+                      labels = c("Normal" = "Non-Infected", 
+                                 "Virus" = "OYDV-Infected"))
+
+# Menampilkan Grafik
+print(grafik_panjang)
