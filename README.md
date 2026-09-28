@@ -51,3 +51,27 @@ From here, you have done the ANOVA test, usually if the result is significance, 
 Tukey_Test <- HSD.test(model_anova, trt = "1st factor", console = FALSE
 ~~~
 Package used is `HSD.test()` and we will test by most preferred factor, mine was 1st but you can change with yours in `trt` (abbreviation of treatment)
+
+`Tukey_Test` also created environment where the data tested so it can be use later without doing posthoc tukey again
+
+Next, we will create summary table of the test showing how difference/significance between treatment. We're going to group data with similar significancy with
+~~~
+data_letter <- Tukey_Test$groups
+data_letter$(1st Factor) <- rownames(data_letter)
+~~~
+This will group every data with their similar significance and give each a letter to represent their difference
+
+~~~
+summary_table <- (environment name) %>%
+    group_by("1st factor", "2nd factor") %>%
+    summarise(
+          mean = round(mean("dependent variable", na.rm - TRUE), 2),
+          SD = round(sd("dependent variable", na.rm = TRUE), 2),
+          .groups = 'drop'
+          )
+~~~
+Code above used to create summary table with mean number of each data per replication.
+The table will show mean number also with standard deviation `SD` and significance symbols in superscript.
+
+### 3rd - Formatting and Print Final Table
+
