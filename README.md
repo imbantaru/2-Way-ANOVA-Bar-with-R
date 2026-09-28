@@ -74,4 +74,28 @@ Code above used to create summary table with mean number of each data per replic
 The table will show mean number also with standard deviation `SD` and significance symbols in superscript.
 
 ### 3rd - Formatting and Print Final Table
+The table is summarized, now we're going to format and print it as .xlsx
+~~~
+final_table <- merge(summary_table, data_letter[, c("1st factor", "groups)], by = "1st factor")
+~~~
 
+To tidy up the table we're going to use this script
+~~~
+final_table <- final_table %>%
+    mutate(
+        `dependent variable` = paste0(mean, " +/- ", SD, " ", groups)
+    ) %>%
+    select(1st factor, 2nd factor, `dependent variable`) %>%
+    arrange(1st factor, 2nd factor)
+~~~
+
+Then we're going to export the result with this
+~~~
+print("=== Table Title ===")
+print(final_table)
+
+#change the excel file name as your preference
+write_xlsx(final_table, "excel file.xlsx")
+~~~
+
+### 4th - Creating Bar Graph
