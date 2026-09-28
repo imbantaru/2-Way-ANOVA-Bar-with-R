@@ -99,3 +99,7 @@ write_xlsx(final_table, "excel file.xlsx")
 ~~~
 
 ### 4th - Creating Bar Graph
+The best tool to create graph in R is package `ggplot2`. Load the package as usual.
+~~~
+library(ggplot2)
+~~~
